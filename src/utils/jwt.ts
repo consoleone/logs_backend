@@ -2,9 +2,7 @@ import jwt from 'jsonwebtoken';
 import { parsedEnv as env } from '../env/validate';
 
 export const getJwt = (payload: { _id: string }) => {
-  return jwt.sign(payload, env.JWT_SECRET_KEY, {
-    expiresIn: '1d',
-  });
+  return jwt.sign(payload, env.JWT_SECRET_KEY);
 };
 
 type JwtPayload = {
