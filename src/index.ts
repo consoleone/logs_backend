@@ -30,6 +30,20 @@ app.get('/', (req: Request, res: Response, next: NextFunction) => {
   }
 });
 
+app.get('/logger', async (req: Request, res: Response) => {
+  const token = req.cookies.token;
+  if (!token) return res.send('Token is not provided').redirect('/login');
+
+  try {
+    verifyJwt(token);
+    const logs = await prisma.logs.findMany({});
+    res.json(logs);
+  } catch (error) {
+    console.log(error);
+    res.send('Invalid Token').redirect('/login');
+  }
+});
+
 app.post('/login', (req: Request, res: Response) => {
   const { id, password } = req.body;
 
