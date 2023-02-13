@@ -5,4 +5,5 @@ export const envSchema = z.object({
   ID: z.string(),
   PASSWORD: z.string(),
   JWT_SECRET_KEY: z.string(),
+  ALLOWED_ORIGIN: z.string(),
 });
