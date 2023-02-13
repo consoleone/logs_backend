@@ -36,9 +36,16 @@ app.post('/login', (req: Request, res: Response) => {
   console.log(id, password);
   console.log(env);
 
+  // set expires infinte
+
   if (id === env.ID && password === env.PASSWORD) {
     const token = getJwt({ _id: id as string });
-    res.cookie('token', token, { httpOnly: true });
+    res.cookie('token', token, {
+      expires: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000),
+      httpOnly: true,
+      sameSite: 'none',
+      secure: true,
+    });
     return res.send('Login Success');
   }
 
