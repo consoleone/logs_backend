@@ -1,6 +1,9 @@
 import { z } from 'zod';
 import axios from 'axios';
 
+// add base url ad /log/ to all requests
+axios.defaults.baseURL = '/log/';
+
 axios.interceptors.request.use((config) => {
   config.withCredentials = true;
   return config;
