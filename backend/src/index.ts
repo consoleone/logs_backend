@@ -5,18 +5,24 @@ import cookieparser from 'cookie-parser';
 import { parsedEnv as env } from './env/validate';
 import { getJwt, verifyJwt } from './utils/jwt';
 import cors from 'cors';
+import path from 'path';
 
 const app = express();
 
 app.use(
   cors({
-    origin: ['http://localhost:5173', env.ALLOWED_ORIGIN],
+    origin: ['http://localhost:4000', env.ALLOWED_ORIGIN],
     credentials: true,
   })
 );
 
 app.use(express.json());
 app.use(cookieparser());
+app.use(express.static(path.join(__dirname, '/public')));
+
+app.use('/', (req, res) => {
+  res.sendFile(path.join(__dirname, '/public/index.html'));
+});
 
 app.get('/', (req: Request, res: Response, next: NextFunction) => {
   const token = req.cookies.token;
@@ -30,27 +36,8 @@ app.get('/', (req: Request, res: Response, next: NextFunction) => {
   }
 });
 
-app.get('/logger', async (req: Request, res: Response) => {
-  const token = req.cookies.token;
-  if (!token) return res.send('Token is not provided').redirect('/login');
-
-  try {
-    verifyJwt(token);
-    const logs = await prisma.logs.findMany({});
-    res.json(logs);
-  } catch (error) {
-    console.log(error);
-    res.send('Invalid Token').redirect('/login');
-  }
-});
-
 app.post('/login', (req: Request, res: Response) => {
   const { id, password } = req.body;
-
-  console.log(id, password);
-  console.log(env);
-
-  // set expires infinte
 
   if (id === env.ID && password === env.PASSWORD) {
     const token = getJwt({ _id: id as string });
@@ -63,7 +50,7 @@ app.post('/login', (req: Request, res: Response) => {
     return res.send('Login Success');
   }
 
-  return res.send('Login Failed');
+  return res.status(401).send('Login Failed');
 });
 
 app.get('/logs', async (req: Request, res: Response) => {
@@ -89,7 +76,6 @@ app.use((err: CustomError, req: Request, res: Response, next: any) => {
 async function start() {
   try {
     (await import('./env/validate')).parsedEnv;
-    (await import('dotenv')).config();
 
     await prisma.$connect();
     app.listen(4000, () => {

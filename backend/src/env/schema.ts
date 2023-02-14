@@ -6,4 +6,5 @@ export const envSchema = z.object({
   PASSWORD: z.string(),
   JWT_SECRET_KEY: z.string(),
   ALLOWED_ORIGIN: z.string(),
+  NODE_ENV: z.string(),
 });
