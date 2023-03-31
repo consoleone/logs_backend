@@ -10,7 +10,7 @@ const router = Router();
 router.post('/login', (req, res) => {
   const { id, password } = req.body;
 
-  if (id === env.ID && password === env.PASSWORD) {
+  if (id.trim() === env.ID.trim() && password.trim() === env.PASSWORD.trim()) {
     const token = getJwt({ _id: id as string });
     res.cookie('token', token, {
       expires: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000),
